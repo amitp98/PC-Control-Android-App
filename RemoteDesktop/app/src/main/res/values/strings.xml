@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Remote Desktop</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="apps">Applications</string>
+
+    <string name="connect">Connect</string>
+    <string name="mouse">Mouse</string>
+    <string name="keyboard">Keyboard</string>
+    <string name="presentation">Presentation</string>
+    <string name="about">About App</string>
+
+    <string name="ip">Enter IP</string>
+    <string name="title_activity_mouse">Mouse</string>
+    <string name="left_click">left</string>
+    <string name="right_click">right</string>
+
+
+</resources>
