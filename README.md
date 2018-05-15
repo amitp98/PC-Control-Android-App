@@ -1,8 +1,9 @@
 Android app to control following on PC:
-1. Touchpad
-2. Keyboard
-3. Presentation
-4. Launch Applications(Firefox, File manager, Terminal, Gedit)
+
+1. Touchpad (Mouse, Left and Right Click)
+2. Keyboard (Input Text and few commonly used Shortcut Keys) 
+3. Presentation (Slideshow, Pointer as Pen, Slide Change using Volume Button) 
+4. Launch Applications (Firefox, Terminal, Gedit, File Manager)
 
 Details:
 1. TCP Socket for connection between phone and PC using IP Address
