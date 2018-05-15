@@ -1,9 +1,7 @@
 package RemoteDesktop;
 
-import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -31,17 +29,16 @@ public class Server{
                 new Thread(){
                     @Override
                     public void run(){
-                        //initiate  the bot:
+                        															//initiate  the server:
                         try{
                             startServer(port);
                         } catch (Exception e){
-                            e.printStackTrace();
+                            RemoteDesktop.info.setText("Error starting the server");
                         }
                 }}.start();
                 
         } catch(Exception e){
-            System.out.println("Error in initializing server");
-            e.printStackTrace();
+            RemoteDesktop.info.setText("Error in initializing server");
         }
     }
     
@@ -58,7 +55,7 @@ public class Server{
             RemoteDesktop.start.setEnabled(false);
             RemoteDesktop.reset.setEnabled(true);
 
-            //MouseKey control = new MouseKey();
+            MouseKey control = new MouseKey();
 
             is = clientSocket.getInputStream();
             os = clientSocket.getOutputStream();
@@ -71,7 +68,15 @@ public class Server{
                         int keyCode;
                         if (message != null){
                             switch (message){
-              /*                  case "KEY_PRESS":
+                                case "FIREFOX": control.launch(1);
+                                              break;
+                                case "GEDIT": control.launch(2);
+                                              break;
+                                case "TERMINAL": control.CtrlAltT();
+                                              break;
+                                case "FILE": control.launch(3);
+                                              break;
+                                case "KEY_PRESS":
                                     keyCode = (int) objectInputStream.readObject();
                                     control.keyPress(keyCode);
                                     break;
@@ -80,22 +85,24 @@ public class Server{
                                     control.keyRelease(keyCode);
                                     break;
                                 case "CTRL_ALT_T":
-                                    control.ctrlAltT();
+                                    control.CtrlAltT();
                                     break;
                                 case "CTRL_SHIFT_Z":
-                                    control.ctrlShiftZ();
+                                    control.CtrlShiftZ();
+                                    break;
+								case "ShiftF5":
+                                    control.ShiftF5();
                                     break;
                                 case "ALT_F4":
-                                    control.altF4();
+                                    control.AltF4();
                                     break;
                                 case "TYPE_CHARACTER": 
-                                    //handle StringIndexOutOfBoundsException here when pressing soft enter key
                                     char ch = ((String) objectInputStream.readObject()).charAt(0);
-                                    control.typeCharacter(ch);
+                                    control.type(ch);
                                     break;
                                 case "TYPE_KEY": 
                                     keyCode = (int) objectInputStream.readObject();
-                                    control.typeCharacter(keyCode);
+                                    control.type(keyCode);
                                     break;
                                 case "LEFT_ARROW_KEY":
                                     control.pressLeftArrowKey();
@@ -109,10 +116,32 @@ public class Server{
                                 case "UP_ARROW_KEY":
                                     control.pressUpArrowKey();
                                     break;
-                                case "F5_KEY":
+                                case "F5":
                                     control.pressF5Key();
                                     break;
-                                    */
+                                case "LEFT":
+                                    control.LeftClick();
+                                    break;
+                                case "LEFT_P":
+                                    control.LeftP();
+                                    break;
+                                case "LEFT_R":
+                                    control.LeftR();
+                                    break;
+                                case "RIGHT":
+                                    control.RightClick();
+                                    break;
+                                case "DOUBLE":
+                                    control.DoubleClick();
+                                    break; 
+                                case "MOUSE_MOVE":
+                                    int x = (int) objectInputStream.readObject();
+                                    int y = (int) objectInputStream.readObject();
+                                    Point p = MouseInfo.getPointerInfo().getLocation(); //current  position
+                                    float X = p.x;
+                                    float Y = p.y;
+                                    control.Move((int) (X + x), (int) (Y + y));
+                                    break;
                             }
                         } else{
                             connectionClosed();
@@ -121,7 +150,6 @@ public class Server{
                             break;
                         }
                     } catch (Exception e){
-                        e.printStackTrace();
                         connectionClosed();
                         Android.closeConnectionToAndroid();
                         RemoteDesktop.conn.setText("Connection Status : NOT Connected");
@@ -133,7 +161,7 @@ public class Server{
                 };
 
         } catch(Exception e){
-            e.printStackTrace();
+            RemoteDesktop.info.setText("Error in closing server");
         }
     }
    
@@ -147,7 +175,7 @@ public class Server{
             objectOutputStream.close();
         } 
         catch(Exception e){
-            e.printStackTrace();
+            RemoteDesktop.info.setText("Error in closing server");
         }
     }
 }

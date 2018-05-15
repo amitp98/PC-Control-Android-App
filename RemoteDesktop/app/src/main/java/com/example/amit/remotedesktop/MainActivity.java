@@ -2,9 +2,11 @@ package com.example.amit.remotedesktop;
 
 import android.app.Presentation;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,7 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -26,8 +31,10 @@ public class MainActivity extends AppCompatActivity
     public static Socket clientSocket = null;
     public static ObjectInputStream objectInputStream = null;
     public static ObjectOutputStream objectOutputStream = null;
+    static int visible = 0;
 
-
+    Button con;
+    EditText editText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.setTitle(getResources().getString(R.string.connect));
@@ -45,7 +52,23 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        con = findViewById(R.id.button);
+        editText = (EditText) findViewById(R.id.textView1);
+
+
+        SharedPreferences prefs = getSharedPreferences("ip", MODE_PRIVATE);
+        String ip = prefs.getString("ip", null);
+        if (ip != null) {
+            String IP = prefs.getString("ip", "");
+            editText.setText(IP);
+        }
+        if(visible == 1){
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            drawer.openDrawer(GravityCompat.START);
+        }
+
     }
+
 
     @Override
     public void onBackPressed() {
@@ -71,7 +94,17 @@ public class MainActivity extends AppCompatActivity
             }
         }.execute();
 
+     /*   if(clientSocket != null)
+            Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
+*/
+        SharedPreferences.Editor editor = getSharedPreferences("ip", MODE_PRIVATE).edit();
+        editor.putString("ip", ip);
+        editor.apply();
     }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -108,18 +141,22 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_mouse) {
             Intent intentm = new Intent(this, Mouse.class);
+            visible = 1;
             startActivity(intentm);
 
         } else if (id == R.id.nav_keyboard) {
             Intent intentkey = new Intent(this, Keyboard.class);
+            visible = 1;
             startActivity(intentkey);
 
         } else if (id == R.id.nav_presentation) {
             Intent intentp = new Intent(this, Ppt.class);
+            visible = 1;
             startActivity(intentp);
         }
         else if (id == R.id.nav_apps) {
             Intent intenta = new Intent(this, Applications.class);
+            visible = 1;
             startActivity(intenta);
         }
 
@@ -140,7 +177,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     public static void msg(String message) {
+        if (MainActivity.clientSocket != null) {
+            try {
+                MainActivity.objectOutputStream.writeObject(message);
+                MainActivity.objectOutputStream.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+                socketclose();
+            }
+        }
+    }
+    public static void msg(int message) {
         if (MainActivity.clientSocket != null) {
             try {
                 MainActivity.objectOutputStream.writeObject(message);

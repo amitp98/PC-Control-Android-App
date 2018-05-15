@@ -2,7 +2,9 @@ package com.example.amit.remotedesktop;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ public abstract class Connect extends AsyncTask<Void, Void, Socket> {
         this.port = port;
         this.context = context;
     }
+
 
     @Override
     protected Socket doInBackground(Void... voids) {

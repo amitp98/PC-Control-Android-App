@@ -28,7 +28,6 @@ public class Android{
             try{
                 SocketAddress socketAddress = new InetSocketAddress(ip, port);
                 clientSocket = new Socket();
-                clientSocket.connect(socketAddress, 3000);// 3s timeout
                 inputStream = clientSocket.getInputStream();
                 outputStream = clientSocket.getOutputStream();
                 objectOutputStream = new ObjectOutputStream(outputStream);
