@@ -43,16 +43,14 @@ public class Server{
     }
     
     void startServer(int port) throws IOException{
-        String message;
-        
+        String message, filePath, fileName;
         try{
             clientSocket = serverSocket.accept();
             InetAddress remoteInetAddress = clientSocket.getInetAddress();
             new Android().connectToAndroid(remoteInetAddress, port);
 
-            RemoteDesktop.conn.setText("Connection Status : Connected");
+            RemoteDesktop.conn.setText("Connection : Connected");
             RemoteDesktop.info.setText("Connected to Android!");
-            RemoteDesktop.start.setEnabled(false);
             RemoteDesktop.reset.setEnabled(true);
 
             MouseKey control = new MouseKey();
@@ -90,7 +88,7 @@ public class Server{
                                 case "CTRL_SHIFT_Z":
                                     control.CtrlShiftZ();
                                     break;
-								case "ShiftF5":
+				case "ShiftF5":
                                     control.ShiftF5();
                                     break;
                                 case "ALT_F4":
@@ -99,6 +97,10 @@ public class Server{
                                 case "TYPE_CHARACTER": 
                                     char ch = ((String) objectInputStream.readObject()).charAt(0);
                                     control.type(ch);
+                                    break;
+                                case "TYPE_MSG": 
+                                    String msg = ((String) objectInputStream.readObject());
+                                    RemoteDesktop.info.setText(msg);
                                     break;
                                 case "TYPE_KEY": 
                                     keyCode = (int) objectInputStream.readObject();
@@ -142,20 +144,30 @@ public class Server{
                                     float Y = p.y;
                                     control.Move((int) (X + x), (int) (Y + y));
                                     break;
+                                case "FILE_TRANSFER_REQUEST":
+                                    fileName = (String) objectInputStream.readObject();
+                                    long fileSize = (long) objectInputStream.readObject();
+                                    //not in thread, blocking action
+                                    new MyFile().receiveFile(
+                                            fileName, fileSize, objectInputStream
+                                    );
+                                    break;
+                                case "FILE_RECEIVE":
+                                    RemoteDesktop.file.doClick();
+                                    break;
                             }
                         } else{
                             connectionClosed();
-                            RemoteDesktop.conn.setText("Connection Status : NOT Connected");
+                            RemoteDesktop.conn.setText("Connection : NOT Connected");
                             RemoteDesktop.info.setText(" Press Connect to connect to Android ...");
                             break;
                         }
                     } catch (Exception e){
                         connectionClosed();
                         Android.closeConnectionToAndroid();
-                        RemoteDesktop.conn.setText("Connection Status : NOT Connected");
+                        RemoteDesktop.conn.setText("Connection : NOT Connected");
                         RemoteDesktop.info.setText(" Press Connect to connect to Android ...");
-                        RemoteDesktop.start.setEnabled(true);
-                        RemoteDesktop.reset.setEnabled(false);
+                        //RemoteDesktop.reset.setEnabled(false);
                         break;
                     }
                 };
